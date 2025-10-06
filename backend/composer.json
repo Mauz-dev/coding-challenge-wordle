@@ -1,0 +1,18 @@
+{
+  "name": "wordle-team-challenge/backend",
+  "description": "Backend API for Wordle Team Challenge",
+  "type": "project",
+  "require": {
+    "php": ">=8.3"
+  },
+  "config": {
+    "platform": {
+      "php": "8.3"
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "WordleChallenge\\": "src/"
+    }
+  }
+}
