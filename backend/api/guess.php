@@ -10,6 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
 
+const MAX_TRIES = 6;
+
 session_start();
 
 $randomWord = $_SESSION['word'] ?? false;
@@ -37,7 +39,7 @@ if(!preg_match('/^[A-Z]{5}$/', $guess)) {
     exit;
 }
 
-if (++$_SESSION['guessCount'] > 6) {
+if (++$_SESSION['guessCount'] > MAX_TRIES) {
     http_response_code(400);
     echo json_encode([
         'status'     => 'error',
@@ -61,7 +63,7 @@ foreach (str_split($guess) as $i => $letter) {
 
 echo json_encode([
     'status'     => 'success',
-    'message'    => $guess === $randomWord ? 'Correct! You guessed the word!' : 'Guess recorded',
+    'message'    => $guess === $randomWord ? 'Correct! You guessed the word!' : 'Guess recorded - ' . (MAX_TRIES - $_SESSION['guessCount']) . ' tries left',
     'word'       => $randomWord,
     'guess'      => $guess,
     'guessCount' => $_SESSION['guessCount'],
