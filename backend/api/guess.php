@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json");
 
 // Handle preflight OPTIONS request
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
@@ -21,7 +21,7 @@ if (!$randomWord || !isset($_SESSION['guessCount'])) {
     echo json_encode([
         'status'     => 'error',
         'message'    => 'Session corrupt - word not found',
-        'guessCount' => $_SESSION['guessCount'],
+        'guessCount' => $_SESSION['guessCount'] ?? 0,
     ]);
     exit;
 }
