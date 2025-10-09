@@ -21,7 +21,7 @@ export default function App() {
   }
 
   return (
-    <div className='App'>
+    <div className='app'>
       <header>
         <h1>🔤 Wordle Team Challenge</h1>
         <p>Hello World! This is your starting template.</p>
