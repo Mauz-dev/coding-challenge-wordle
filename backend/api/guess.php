@@ -50,5 +50,6 @@ echo json_encode([
     'message' => $guess == $randomWord ? 'Correct! You guessed the word!' : 'Guess recorded',
     'word' => $randomWord,
     'guess' => $guess,
+    'guessCount' => $_SESSION['guessCount'],
     'result' => json_encode($result),
 ]);
