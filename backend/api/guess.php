@@ -20,7 +20,7 @@ if (!$randomWord || !isset($_SESSION['guessCount'])) {
     exit;
 }
 
-$guess = strtoupper($_GET['guess']) ?? '';
+$guess = strtoupper($_GET['guess'] ?? '');
 
 if(!preg_match('/^[A-Z]{5}$/', $guess)) {
     http_response_code(400);
