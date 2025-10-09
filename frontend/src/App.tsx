@@ -3,7 +3,7 @@ import WordInput from './components/WordInput'
 import WordleGrid from './components/WordleGrid'
 
 // API configuration
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = 'http://localhost:8000/api'
 
 export default function App() {
   const [message, setMessage] = useState<string>(
@@ -45,8 +45,8 @@ export default function App() {
       }
 
       const data = await response.json()
-      const newGuessCount = guessCount + 1
-      setGuessCount(newGuessCount)
+   
+      setGuessCount(data.guessCount)
       setCurrentWord(word)
 
       // Check if all letters are correct (game won)
@@ -55,12 +55,12 @@ export default function App() {
       )
       if (allCorrect) {
         setGameWon(true)
-        setMessage(`Congratulations! You won in ${newGuessCount} guesses!`)
+        setMessage(`Congratulations! You won in ${guessCount} guesses!`)
         return
       }
 
       // Check if we've reached the limit (game lost)
-      if (newGuessCount >= 6) {
+      if (guessCount >= 6) {
         setGameLost(true)
         setMessage(
           `Game over! You've used all 6 guesses. The word was: ${word}`
@@ -69,7 +69,7 @@ export default function App() {
       }
 
       setMessage(
-        `Word submitted: ${word}. Response: ${JSON.stringify(data)}. Guesses remaining: ${6 - newGuessCount}`
+        `Word submitted: ${word}. Response: ${JSON.stringify(data)}. Guesses remaining: ${6 - guessCount}`
       )
     } catch (error) {
       setMessage(`Error submitting word: ${error}`)
