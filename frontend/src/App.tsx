@@ -39,6 +39,7 @@ export default function App() {
       </header>
       <main>
         <WordleGrid />
+        <input type="text"  />
       </main>
     </div>
   )

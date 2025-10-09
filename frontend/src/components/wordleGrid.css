@@ -1,0 +1,18 @@
+.wordle-grid {
+    font-size: 2rem;
+    display: grid;
+    grid-auto-rows: max-content;
+    gap: var(--gap);
+    justify-items: center;
+    .row {
+        display: grid;
+        grid-template-columns: repeat(5, 40px);
+        gap: var(--gap);
+        justify-items: center;
+    }
+    .cell {
+        aspect-ratio: 1;
+        text-align: center;
+        border: 1px solid #ccc;
+    }
+}
