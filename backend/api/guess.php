@@ -20,17 +20,17 @@ if (!$randomWord || !isset($_SESSION['guessCount'])) {
     exit;
 }
 
-if (++$_SESSION['guessCount'] > 6) {
-    http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Game Over - maximum number of guesses exceeded']);
-    exit;
-}
-
 $guess = strtoupper($_GET['guess']) ?? '';
 
 if(!preg_match('/^[A-Z]{5}$/', $guess)) {
     http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Invalid guess']);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid guess - use only 5 letters A-Z']);
+    exit;
+}
+
+if (++$_SESSION['guessCount'] > 6) {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'Game Over - maximum number of guesses exceeded']);
     exit;
 }
 
@@ -46,10 +46,10 @@ foreach (str_split($guess) as $i => $letter) {
 }
 
 echo json_encode([
-    'status' => 'success',
-    'message' => $guess == $randomWord ? 'Correct! You guessed the word!' : 'Guess recorded',
-    'word' => $randomWord,
-    'guess' => $guess,
+    'status'     => 'success',
+    'message'    => $guess == $randomWord ? 'Correct! You guessed the word!' : 'Guess recorded',
+    'word'       => $randomWord,
+    'guess'      => $guess,
     'guessCount' => $_SESSION['guessCount'],
-    'result' => $result,
+    'result'     => $result,
 ]);

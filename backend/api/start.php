@@ -33,5 +33,6 @@ $_SESSION['guessCount'] = 0;
 echo json_encode([
     'status' => 'success',
     'message' => 'Session started, word stored in session',
+    'guessCount' => $_SESSION['guessCount'],
     'word' => $randomWord,
 ]);
