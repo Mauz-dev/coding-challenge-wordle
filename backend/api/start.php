@@ -28,6 +28,7 @@ if (!$words) {
 
 $randomWord = strtoupper($words[array_rand($words)]);
 $_SESSION['word'] = $randomWord;
+$_SESSION['guessCount'] = 0;
 
 echo json_encode([
     'status' => 'success',

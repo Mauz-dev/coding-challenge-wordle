@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
 
-// DUMMY RESPONSE 
+// DUMMY RESPONSE
 echo json_encode([
     'status' => 'success',
     'message' => 'This is just a dummy response. Create your own API endpoint to return real data.',

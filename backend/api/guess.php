@@ -11,6 +11,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 session_start();
+
+if (++$_SESSION['guessCount'] > 6) {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'Game Over - maximum number of guesses exceeded']);
+    exit;
+}
+
 $randomWord = $_SESSION['word'] ?? '';
 
 if (!$randomWord) {
@@ -19,8 +26,29 @@ if (!$randomWord) {
     exit;
 }
 
+$guess = strtoupper($_GET['guess']) ?? '';
+
+if(!preg_match('/^[A-Z]{5}$/', $guess)) {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid guess']);
+    exit;
+}
+
+$result = [];
+foreach (str_split($guess) as $i => $letter) {
+    if ($letter === $randomWord[$i]) {
+        $result[$i+1] = 'correct';
+    } elseif (str_contains($randomWord, $letter)) {
+        $result[$i+1] = 'present';
+    } else {
+        $result[$i+1] = 'absent';
+    }
+}
+
 echo json_encode([
     'status' => 'success',
-    'message' => 'foo',
+    'message' => $guess == $randomWord ? 'Correct! You guessed the word!' : 'Guess recorded',
     'word' => $randomWord,
+    'guess' => $guess,
+    'result' => json_encode($result),
 ]);
