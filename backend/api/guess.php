@@ -12,17 +12,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 session_start();
 
-if (++$_SESSION['guessCount'] > 6) {
-    http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Game Over - maximum number of guesses exceeded']);
+$randomWord = $_SESSION['word'] ?? false;
+
+if (!$randomWord || !isset($_SESSION['guessCount'])) {
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Session corrupt - word not found', 'session status' => session_status()]);
     exit;
 }
 
-$randomWord = $_SESSION['word'] ?? '';
-
-if (!$randomWord) {
-    http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Session corrupt - word not found', 'session status' => session_status()]);
+if (++$_SESSION['guessCount'] > 6) {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => 'Game Over - maximum number of guesses exceeded']);
     exit;
 }
 
@@ -51,5 +51,5 @@ echo json_encode([
     'word' => $randomWord,
     'guess' => $guess,
     'guessCount' => $_SESSION['guessCount'],
-    'result' => json_encode($result),
+    'result' => $result,
 ]);
