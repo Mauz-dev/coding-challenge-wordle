@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import LetterTile from './LetterTile'
-
-export type LetterStatus = 'correct' | 'present' | 'absent'
+import LetterTile, { LetterStatus } from './LetterTile'
 
 interface WordInputProps {
   onSubmit: (word: string) => void

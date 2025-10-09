@@ -14,7 +14,9 @@ export default function App() {
   const [guessCount, setGuessCount] = useState<number>(0)
   const [gameWon, setGameWon] = useState<boolean>(false)
   const [gameLost, setGameLost] = useState<boolean>(false)
-  const [results, setResults] = useState<string[]>([])
+  const [results, setResults] = useState<
+    Array<{ guess: string; result: { [key: string]: string } }>
+  >([])
 
   const testBackendConnection = async () => {
     try {
@@ -33,27 +35,52 @@ export default function App() {
       setMessage(`Submitting word: ${word} (Guess ${guessCount + 1}/6)`)
 
       // Submit word to the backend guess endpoint
-      const response = await fetch(`${API_BASE_URL}/guess?word=${word.toLowerCase()}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
+      /*       const response = await fetch(
+        `${API_BASE_URL}/guess.php?guess=${word.toLowerCase()}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      ) */
+      const data = {
+        status: 'success',
+        message: 'Guess recorded - 5 tries left',
+        word: 'apple',
+        guess: 'HELLO',
+        guessCount: 1,
+        results: [
+          {
+            guess: 'HELLO',
+            result: {
+              '1': 'absent',
+              '2': 'absent',
+              '3': 'absent',
+              '4': 'absent',
+              '5': 'absent',
+            },
+          },
+        ],
+      }
 
-      if (!response.ok) {
+      /*   if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const data = await response.json()
-   
+      const data = await response.json() */
+
       setGuessCount(data.guessCount)
       setCurrentWord(word)
       setResults(data.results)
 
       // Check if all letters are correct (game won)
-      const allCorrect = Object.values(data).every(
-        (status) => status === 'correct'
-      )
+      const latestResult = data.results[data.results.length - 1]
+      const allCorrect =
+        latestResult &&
+        Object.values(latestResult.result).every(
+          (status) => status === 'correct'
+        )
       if (allCorrect) {
         setGameWon(true)
         setMessage(`Congratulations! You won in ${guessCount} guesses!`)
@@ -77,7 +104,15 @@ export default function App() {
     }
   }
 
-  const startGame = () => {
+  const startGame = async () => {
+    try {
+      await fetch(`${API_BASE_URL}/start.php`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    } catch (error) {}
     setIsGameActive(true)
     setGuessCount(0)
     setGameWon(false)
@@ -120,9 +155,7 @@ export default function App() {
               <div className="game-info">
                 <p>Guesses: {guessCount}/6</p>
                 {gameWon && <p className="game-status won">You Won!</p>}
-                {gameLost && (
-                  <p className="game-status lost">Game Over!</p>
-                )}
+                {gameLost && <p className="game-status lost">Game Over!</p>}
               </div>
 
               <WordInput
@@ -133,6 +166,7 @@ export default function App() {
 
               {currentWord && (
                 <div className="current-word-display">
+                  <WordleGrid results={results} word={currentWord}/>
                   <p>
                     Current word: <strong>{currentWord}</strong>
                   </p>
@@ -147,10 +181,10 @@ export default function App() {
             </div>
           )}
         </div>
-{/*
+        {/*
         <WordleGrid />
 */}
-{/*
+        {/*
         <input type="text"  />
 */}
       </main>

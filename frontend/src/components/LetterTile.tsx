@@ -1,6 +1,6 @@
 import React from 'react'
 
-export type LetterStatus = 'correct' | 'present' | 'absent'
+export type LetterStatus = 'correct' | 'present' | 'absent' | 'empty'
 
 interface LetterTileProps {
   letter: string
@@ -21,6 +21,10 @@ const LetterTile: React.FC<LetterTileProps> = ({
         return 'letter-tile-present'
       case 'absent':
         return 'letter-tile-absent'
+      case 'empty':
+        return 'letter-tile-empty'
+      default:
+        return 'letter-tile-empty'
     }
   }
 
