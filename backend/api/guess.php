@@ -6,31 +6,50 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Content-Type: application/json");
 
 // Handle preflight OPTIONS request
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
+const MAX_TRIES = 6;
+
 session_start();
 
-if (++$_SESSION['guessCount'] > 6) {
-    http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Game Over - maximum number of guesses exceeded']);
-    exit;
-}
+$randomWord = $_SESSION['word'] ?? false;
 
-$randomWord = $_SESSION['word'] ?? '';
-
-if (!$randomWord) {
+if (!$randomWord || !isset($_SESSION['guessCount']) || !isset($_SESSION['results'])) {
     http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'Session corrupt - word not found', 'session status' => session_status()]);
+    echo json_encode([
+        'status'     => 'error',
+        'message'    => 'Session corrupt - word not found',
+        'guessCount' => $_SESSION['guessCount'] ?? 0,
+        'results'    => $_SESSION['results'] ?? [],
+    ]);
     exit;
 }
 
-$guess = strtoupper($_GET['guess']) ?? '';
+$guess = strtoupper($_GET['guess'] ?? '');
 
 if(!preg_match('/^[A-Z]{5}$/', $guess)) {
     http_response_code(400);
-    echo json_encode(['status' => 'error', 'message' => 'Invalid guess']);
+    echo json_encode([
+        'status'     => 'error',
+        'message'    => 'Invalid guess - use only 5 letters A-Z',
+        'guess'      => $guess,
+        'guessCount' => $_SESSION['guessCount'],
+        'results'    => $_SESSION['results'],
+    ]);
+    exit;
+}
+
+if (++$_SESSION['guessCount'] > MAX_TRIES) {
+    http_response_code(400);
+    echo json_encode([
+        'status'     => 'error',
+        'message'    => 'Game Over - maximum number of guesses exceeded',
+        'word'       => $randomWord,
+        'guessCount' => $_SESSION['guessCount'],
+        'results'    => $_SESSION['results'],
+    ]);
     exit;
 }
 
@@ -45,11 +64,16 @@ foreach (str_split($guess) as $i => $letter) {
     }
 }
 
+$_SESSION['results'][] = [
+    'guess'  => $guess,
+    'result' => $result,
+];
+
 echo json_encode([
-    'status' => 'success',
-    'message' => $guess == $randomWord ? 'Correct! You guessed the word!' : 'Guess recorded',
-    'word' => $randomWord,
-    'guess' => $guess,
+    'status'     => 'success',
+    'message'    => $guess === $randomWord ? 'Correct! You guessed the word!' : 'Guess recorded - ' . (MAX_TRIES - $_SESSION['guessCount']) . ' tries left',
+    'word'       => $randomWord,
+    'guess'      => $guess,
     'guessCount' => $_SESSION['guessCount'],
-    'result' => json_encode($result),
+    'results'    => $_SESSION['results'],
 ]);
