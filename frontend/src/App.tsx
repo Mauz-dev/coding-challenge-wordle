@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import WordInput from './components/WordInput'
+import WordleGrid from './components/WordleGrid'
 
 // API configuration
 const API_BASE_URL = 'http://localhost:8000'
@@ -147,6 +148,10 @@ export default function App() {
           </div>
         </div>
       </header>
+      <main>
+        <WordleGrid />
+        <input type="text"  />
+      </main>
     </div>
   )
 }
