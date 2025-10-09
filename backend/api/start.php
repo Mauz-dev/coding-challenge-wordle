@@ -29,10 +29,12 @@ if (!$words) {
 $randomWord = strtoupper($words[array_rand($words)]);
 $_SESSION['word'] = $randomWord;
 $_SESSION['guessCount'] = 0;
+$_SESSION['results'] = [];
 
 echo json_encode([
     'status'     => 'success',
     'message'    => 'Session started, word stored in session',
     'guessCount' => $_SESSION['guessCount'],
     'word'       => $randomWord,
+    'results'    => $_SESSION['results'],
 ]);
