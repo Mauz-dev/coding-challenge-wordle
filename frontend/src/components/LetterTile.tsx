@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 export type LetterStatus = 'correct' | 'present' | 'absent' | 'empty'
 
@@ -6,31 +6,42 @@ interface LetterTileProps {
   letter: string
   status: LetterStatus
   isActive?: boolean
+  shouldFlip?: boolean
+  flipDelay?: number
 }
 
 const LetterTile: React.FC<LetterTileProps> = ({
   letter,
   status,
   isActive = false,
+  shouldFlip = false,
+  flipDelay = 0,
 }) => {
-  const getStatusClass = () => {
-    switch (status) {
-      case 'correct':
-        return 'letter-tile-correct'
-      case 'present':
-        return 'letter-tile-present'
-      case 'absent':
-        return 'letter-tile-absent'
-      case 'empty':
-        return 'letter-tile-empty'
-      default:
-        return 'letter-tile-empty'
+  const [shouldPop, setShouldPop] = useState(false)
+  const [isFlipping, setIsFlipping] = useState(false)
+
+  useEffect(() => {
+    if (letter && status === 'empty') {
+      setShouldPop(true)
+      const timer = setTimeout(() => setShouldPop(false), 100)
+      return () => clearTimeout(timer)
     }
-  }
+  }, [letter, status])
+
+  useEffect(() => {
+    if (shouldFlip && status !== 'empty') {
+      const timer = setTimeout(() => {
+        setIsFlipping(true)
+        const resetTimer = setTimeout(() => setIsFlipping(false), 600)
+        return () => clearTimeout(resetTimer)
+      }, flipDelay)
+      return () => clearTimeout(timer)
+    }
+  }, [shouldFlip, flipDelay, status])
 
   return (
     <div
-      className={`letter-tile ${getStatusClass()} ${isActive ? 'letter-tile-active' : ''}`}
+      className={`letter-tile letter-tile-${status} ${isActive ? 'letter-tile-active' : ''} ${shouldPop ? 'letter-tile-pop' : ''} ${isFlipping ? 'letter-tile-flip' : ''}`}
     >
       {letter.toUpperCase()}
     </div>

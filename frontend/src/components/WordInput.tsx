@@ -3,20 +3,34 @@ import LetterTile, { LetterStatus } from './LetterTile'
 
 interface WordInputProps {
   onSubmit: (word: string) => void
+  onKeyPress: (key: string) => void
+  onEnter: () => void
+  onBackspace: () => void
   isDisabled?: boolean
   maxLength?: number
+  currentGuess?: string
+  isSubmitting?: boolean
 }
 
 const WordInput: React.FC<WordInputProps> = ({
   onSubmit,
+  onKeyPress,
+  onEnter,
+  onBackspace,
   isDisabled = false,
-  maxLength = 5
+  maxLength = 5,
+  currentGuess = '',
+  isSubmitting = false,
 }) => {
   const [input, setInput] = useState('')
   const [letterStatuses, setLetterStatuses] = useState<LetterStatus[]>(
     Array(maxLength).fill('empty')
   )
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setInput(currentGuess)
+  }, [currentGuess])
 
   useEffect(() => {
     if (!isDisabled && inputRef.current) {
@@ -30,6 +44,7 @@ const WordInput: React.FC<WordInputProps> = ({
     // Only allow letters (no numbers, special characters, or spaces) and limit to maxLength
     if (value.length <= maxLength && /^[A-Z]*$/.test(value)) {
       setInput(value)
+      onKeyPress(value[value.length - 1] || '')
 
       // Update letter statuses - show empty for unfilled positions
       const newStatuses = Array(maxLength).fill('empty')
@@ -47,17 +62,16 @@ const WordInput: React.FC<WordInputProps> = ({
       return
     }
 
-    if (e.key === 'Enter' && input.length === maxLength && !isDisabled) {
+    if (
+      e.key === 'Enter' &&
+      input.length === maxLength &&
+      !isDisabled &&
+      !isSubmitting
+    ) {
       onSubmit(input)
     } else if (e.key === 'Backspace' && input.length === 0) {
-      // Allow backspace even when input is empty for better UX
+      onBackspace()
       return
-    }
-  }
-
-  const handleSubmit = () => {
-    if (input.length === maxLength && !isDisabled) {
-      onSubmit(input)
     }
   }
 
@@ -74,6 +88,7 @@ const WordInput: React.FC<WordInputProps> = ({
         ))}
       </div>
 
+      {/* Hidden input for mobile focus management */}
       <div className="word-input-controls">
         <input
           ref={inputRef}
@@ -81,21 +96,14 @@ const WordInput: React.FC<WordInputProps> = ({
           value={input}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          disabled={isDisabled}
+          disabled={isDisabled || isSubmitting}
           maxLength={maxLength}
           className="word-input-field"
           placeholder="Enter word"
           autoComplete="off"
           spellCheck="false"
+          style={{ position: 'absolute', left: '-9999px', opacity: 0 }}
         />
-
-        <button
-          onClick={handleSubmit}
-          disabled={input.length !== maxLength || isDisabled}
-          className="word-input-submit"
-        >
-          Submit
-        </button>
       </div>
     </div>
   )

@@ -1,18 +1,159 @@
 .wordle-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 20px 0;
+}
+
+.row {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+/* Letter Tile Styles */
+.letter-tile {
+    width: 62px;
+    height: 62px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #d3d6da;
+    font-weight: bold;
     font-size: 2rem;
-    display: grid;
-    grid-auto-rows: max-content;
-    gap: var(--gap);
-    justify-items: center;
-    .row {
-        display: grid;
-        grid-template-columns: repeat(5, 40px);
-        gap: var(--gap);
-        justify-items: center;
+    text-transform: uppercase;
+    transition: transform 0.1s ease-in-out;
+    box-sizing: border-box;
+}
+
+
+@keyframes tile-pop {
+    0% {
+        transform: scale(1);
     }
-    .cell {
-        aspect-ratio: 1;
-        text-align: center;
-        border: 1px solid #ccc;
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.letter-tile-pop {
+    animation: tile-pop 0.1s ease-in-out;
+}
+
+@keyframes tile-flip {
+    0% {
+        transform: rotateX(0);
+    }
+    50% {
+        transform: rotateX(-90deg);
+    }
+    100% {
+        transform: rotateX(0);
+    }
+}
+
+.letter-tile-flip {
+    animation: tile-flip 0.6s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+.row-shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.letter-tile-bounce {
+    animation: bounce 0.2s ease-in-out;
+}
+
+.letter-tile-correct {
+    background-color: #6aaa64;
+    color: white;
+    border-color: #6aaa64;
+}
+
+.letter-tile-present {
+    background-color: #c9b458;
+    color: white;
+    border-color: #c9b458;
+}
+
+.letter-tile-absent {
+    background-color: #787c7e;
+    color: white;
+    border-color: #787c7e;
+}
+
+.letter-tile-empty {
+    background-color: white;
+    color: #000;
+    border-color: #d3d6da;
+}
+
+/* Tile with letter but not yet submitted */
+.letter-tile-empty:not(:empty) {
+    border-color: #878a8c;
+}
+
+.letter-tile-active {
+    border-color: #878a8c;
+    animation: none;
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        transform: scale(1); 
+        border-color: #878a8c;
+    }
+    50% { 
+        transform: scale(1.02);
+        border-color: #565758;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+    .letter-tile {
+        width: 56px;
+        height: 56px;
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .letter-tile {
+        width: 52px;
+        height: 52px;
+        font-size: 1.6rem;
+    }
+    
+    .row {
+        gap: 4px;
+    }
+    
+    .wordle-grid {
+        gap: 4px;
     }
 }
